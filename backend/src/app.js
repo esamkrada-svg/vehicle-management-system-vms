@@ -15,38 +15,29 @@ import './models/index.js';
 
 const app = express();
 
-// Middleware
-// Strict CORS: allow only localhost (dev) and your Vercel domain
 const allowedOrigins = [
-    "http://localhost:5173",                          // Vite dev
-    "https://vehicle-management-system-vms.vercel.app" // Vercel frontend
-];
+  'http://localhost:5173',
+  process.env.CORS_ORIGIN,
+].filter(Boolean);
 
-app.use(
-    cors({
-        // Decide which origins are allowed
-        origin(origin, callback) {
-            // Allow server-to-server tools (no origin) like Postman/curl
-            if (!origin) return callback(null, true);
-            return allowedOrigins.includes(origin)
-                ? callback(null, true)
-                : callback(new Error("Not allowed by CORS"));
-        },
-        credentials: true, // allow cookies/Authorization header
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    })
-);
+const corsOptions = {
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    return allowedOrigins.includes(origin)
+      ? callback(null, true)
+      : callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
 
-// Handle preflight requests quickly
-app.options(/.*/, cors());
-
-// Parse JSON bodies
-app.use(express.json());
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 app.use(express.json());
 
-//Routes without authentication
+// Routes without authentication
 app.use('/api/auth', authRoutes);
 
 // Routes with authentication
@@ -59,13 +50,15 @@ app.use('/api/bills', billRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/parts', partRoutes);
 
-// Redirect root to the Vercel frontend
-app.get("/", (req, res) => {
-    res.redirect(302, "https://vehicle-management-system-vms.vercel.app/");
+app.get('/', (req, res) => {
+  res.json({
+    message: 'VMS API is running',
+    health: '/health',
+  });
 });
 
-app.get("/health", (req, res) => {
-    res.json({ status: "ok" });
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 export default app;

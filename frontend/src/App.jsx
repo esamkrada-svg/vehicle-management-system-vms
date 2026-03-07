@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Vehicles from "./pages/Vehicles";
 import AddVehicle from "./pages/AddVehicle";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -17,6 +18,7 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route
         path="/vehicles"
         element={
@@ -57,18 +59,21 @@ function App() {
           </ProtectedRoute>
         }
       />
-
-      <Route path="/add-bill"
+      <Route
+        path="/add-bill"
         element={
           <ProtectedRoute>
             <AddBill />
-          </ProtectedRoute>}
+          </ProtectedRoute>
+        }
       />
-      <Route path="/edit-bill/:id"
+      <Route
+        path="/edit-bill/:id"
         element={
           <ProtectedRoute>
             <EditBill />
-          </ProtectedRoute>}
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/edit-maintenance/:id"
